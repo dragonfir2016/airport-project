@@ -1,10 +1,13 @@
 package helsinki.personnel;
 
+import static ua.com.fielden.platform.entity.query.fluent.EntityQueryUtils.expr;
+import static ua.com.fielden.platform.entity.query.fluent.EntityQueryUtils.select;
 import static ua.com.fielden.platform.reflection.TitlesDescsGetter.getEntityTitleAndDesc;
 
 import helsinki.security.tokens.persistent.Person_CanModify_user_Token;
 import ua.com.fielden.platform.entity.ActivatableAbstractEntity;
 import ua.com.fielden.platform.entity.DynamicEntityKey;
+import ua.com.fielden.platform.entity.annotation.Calculated;
 import ua.com.fielden.platform.entity.annotation.CompanionObject;
 import ua.com.fielden.platform.entity.annotation.CompositeKeyMember;
 import ua.com.fielden.platform.entity.annotation.DescRequired;
@@ -16,11 +19,13 @@ import ua.com.fielden.platform.entity.annotation.KeyType;
 import ua.com.fielden.platform.entity.annotation.MapEntityTo;
 import ua.com.fielden.platform.entity.annotation.MapTo;
 import ua.com.fielden.platform.entity.annotation.Observable;
+import ua.com.fielden.platform.entity.annotation.Readonly;
 import ua.com.fielden.platform.entity.annotation.SkipEntityExistsValidation;
 import ua.com.fielden.platform.entity.annotation.Title;
 import ua.com.fielden.platform.entity.annotation.Unique;
 import ua.com.fielden.platform.entity.annotation.mutator.BeforeChange;
 import ua.com.fielden.platform.entity.annotation.mutator.Handler;
+import ua.com.fielden.platform.entity.query.model.ExpressionModel;
 import ua.com.fielden.platform.property.validator.EmailValidator;
 import ua.com.fielden.platform.security.Authorise;
 import ua.com.fielden.platform.security.user.User;
@@ -51,6 +56,50 @@ public class Person extends ActivatableAbstractEntity<DynamicEntityKey> {
     @Title(value = "Email", desc = "Uniquely identifies a person.")
     @BeforeChange(@Handler(EmailValidator.class))
     private String email;
+    
+    @IsProperty
+    @MapTo
+    @Title(value = "First name", desc = "Represents the person's first name.")
+    private String name;
+    
+    @IsProperty
+    @MapTo
+    @Title(value = "Surname", desc = "Represnts the persons surname")
+    private String surname;
+    
+    @IsProperty
+    @Readonly
+    @Calculated
+    @Title(value = "Full name", desc = "Represents the person's full name")
+    private String desc;
+    protected static final ExpressionModel desc_ = expr().concat().prop("name").with().val(" ").with().prop("surname").end().model();
+    
+
+    @Observable
+    public Person setSurname(final String surname) {
+        this.surname = surname;
+        return this;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    
+
+
+    @Observable
+    public Person setName(final String name) {
+        this.name = name;
+        return this;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    
+
 
     @IsProperty
     @Unique
@@ -80,10 +129,21 @@ public class Person extends ActivatableAbstractEntity<DynamicEntityKey> {
     private String mobile;
 
     @Override
+    
     @Observable
     public Person setDesc(final String desc) {
-        return (Person) super.setDesc(desc);
+        this.desc = desc;
+        return this;
+        
+        
     }
+
+
+    public String getDesc() {
+        return desc;
+    }
+
+    
 
     @Observable
     public Person setEmail(final String email) {
