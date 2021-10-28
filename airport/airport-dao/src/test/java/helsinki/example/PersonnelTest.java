@@ -50,6 +50,8 @@ public class PersonnelTest extends AbstractDaoTestCase {
         final Person person = co(Person.class).findByKeyAndFetch(PersonCo.FETCH_PROVIDER.fetchModel(), "RMD@organisation.com");
         assertEquals("Ronald", person.getName());
     }
+    
+    
 
     
     @Test
