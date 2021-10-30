@@ -43,7 +43,6 @@ import ua.com.fielden.platform.utils.Pair;
 @DescTitle(value = "Full Name", desc = "Person's full name - e.g. the first name followed by the middle initial followed by the surname.")
 @MapEntityTo
 @CompanionObject(PersonCo.class)
-@DescRequired
 @DisplayDescription
 public class Person extends ActivatableAbstractEntity<DynamicEntityKey> {
 
@@ -76,32 +75,6 @@ public class Person extends ActivatableAbstractEntity<DynamicEntityKey> {
     @Title(value = "Full name", desc = "Represents the person's full name")
     private String desc;
     protected static final ExpressionModel desc_ = expr().concat().prop("name").with().val(" ").with().prop("surname").end().model();
-    
-
-    @Observable
-    public Person setSurname(final String surname) {
-        this.surname = surname;
-        return this;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    
-
-
-    @Observable
-    public Person setName(final String name) {
-        this.name = name;
-        return this;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    
 
 
     @IsProperty
@@ -219,6 +192,30 @@ public class Person extends ActivatableAbstractEntity<DynamicEntityKey> {
     /** A convenient method to identify whether the current person instance is an application user. */
     public boolean isAUser() {
         return getUser() != null;
+    }
+    
+
+    @Observable
+    public Person setSurname(final String surname) {
+        this.surname = surname;
+        return this;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    
+
+
+    @Observable
+    public Person setName(final String name) {
+        this.name = name;
+        return this;
+    }
+
+    public String getName() {
+        return name;
     }
 
 }
