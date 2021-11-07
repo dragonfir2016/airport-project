@@ -1,26 +1,18 @@
 package helsinki.assets;
 
-import static org.junit.Assert.*;
-import static ua.com.fielden.platform.entity.query.fluent.EntityQueryUtils.fetch;
-import static ua.com.fielden.platform.entity.query.fluent.EntityQueryUtils.from;
-import static ua.com.fielden.platform.entity.query.fluent.EntityQueryUtils.orderBy;
-import static ua.com.fielden.platform.entity.query.fluent.EntityQueryUtils.select;
-
-import java.math.BigDecimal;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import ua.com.fielden.platform.dao.QueryExecutionModel;
-import ua.com.fielden.platform.entity.query.fluent.fetch;
-import ua.com.fielden.platform.entity.query.model.EntityResultQueryModel;
-import ua.com.fielden.platform.entity.query.model.OrderingModel;
-import ua.com.fielden.platform.security.user.User;
+import helsinki.test_config.AbstractDaoTestCase;
+import ua.com.fielden.platform.entity.meta.MetaProperty;
+import ua.com.fielden.platform.error.Result;
 import ua.com.fielden.platform.test.ioc.UniversalConstantsForTesting;
 import ua.com.fielden.platform.utils.IUniversalConstants;
-
-import helsinki.personnel.Person;
-import helsinki.personnel.PersonCo;
-import helsinki.test_config.AbstractDaoTestCase;
 
 
 /**
@@ -49,6 +41,20 @@ public class AssetClassTest extends AbstractDaoTestCase {
         assertTrue(assetClass.isActive());
     }
 
+    @Test
+    public void name_can_not_be_longer_than_50_characters() {
+        final var longName = "Building".repeat(50);
+        final var assetClass = co(AssetClass.class).new_().setName(longName).setDesc("Property, builidngs and carparks");
+        final MetaProperty<String> mpName = assetClass.getProperty("name");
+        assertNull(mpName.getValue());
+        assertNull(assetClass.getName());
+        assertFalse(mpName.isValid());
+        final Result validationResult = mpName.getFirstFailure();
+        assertNotNull(validationResult);
+        assertFalse(validationResult.isSuccessful());
+        System.out.println(validationResult.getMessage());
+    }
+    
 
     @Override
     public boolean saveDataPopulationScriptToFile() {
@@ -57,7 +63,7 @@ public class AssetClassTest extends AbstractDaoTestCase {
 
     @Override
     public boolean useSavedDataPopulationScript() {
-        return false;
+        return true;
     }
 
     @Override
