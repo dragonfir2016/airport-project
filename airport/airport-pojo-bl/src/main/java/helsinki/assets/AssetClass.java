@@ -1,6 +1,7 @@
 package helsinki.assets;
 
 import ua.com.fielden.platform.entity.DynamicEntityKey;
+import helsinki.common.validators.NoSpacesValidator;
 import ua.com.fielden.platform.entity.AbstractEntity;
 import ua.com.fielden.platform.entity.ActivatableAbstractEntity;
 import ua.com.fielden.platform.entity.annotation.KeyType;
@@ -21,6 +22,7 @@ import ua.com.fielden.platform.entity.annotation.IsProperty;
 import ua.com.fielden.platform.entity.annotation.DescRequired;
 import ua.com.fielden.platform.reflection.TitlesDescsGetter;
 import ua.com.fielden.platform.utils.Pair;
+
 
 /**
  * An entity for classification of assets.
@@ -47,7 +49,7 @@ public class AssetClass extends ActivatableAbstractEntity<DynamicEntityKey> {
     @MapTo
     @Title(value = "Name", desc = "A unique asste class name.")
     @CompositeKeyMember(1)
-    @BeforeChange(@Handler(MaxLengthValidator.class))
+    @BeforeChange({@Handler(MaxLengthValidator.class), @Handler(NoSpacesValidator.class)})
     private String name;
 
     @Observable

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import helsinki.common.validators.NoSpacesValidator;
 import helsinki.test_config.AbstractDaoTestCase;
 import ua.com.fielden.platform.entity.meta.MetaProperty;
 import ua.com.fielden.platform.error.Result;
@@ -53,6 +54,20 @@ public class AssetClassTest extends AbstractDaoTestCase {
         assertNotNull(validationResult);
         assertFalse(validationResult.isSuccessful());
         System.out.println(validationResult.getMessage());
+    }
+    
+    @Test
+    public void name_can_not_contain_spaces() {
+        final var assetClass = co(AssetClass.class).new_().setName("Building").setDesc("Property, builidngs and carparks");
+        assetClass.setName("Name with spaces");
+        final MetaProperty<String> mpName = assetClass.getProperty("name");
+        assertFalse(mpName.isValid());
+        final Result validationResult = mpName.getFirstFailure();
+        assertEquals(NoSpacesValidator.ERR_CONTAINS_SPACES, validationResult.getMessage());
+        assertEquals("Building", assetClass.getName());
+        assetClass.setName("Building1");
+        assertTrue(mpName.isValid());
+        assertEquals("Building1", assetClass.getName());
     }
     
 
