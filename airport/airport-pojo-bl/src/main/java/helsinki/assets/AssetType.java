@@ -76,7 +76,7 @@ public class AssetType extends ActivatableAbstractEntity<DynamicEntityKey> {
     public AssetClass getAssetClass() {
         return assetClass;
     }
-    
+
     
     @Observable
     @Override
