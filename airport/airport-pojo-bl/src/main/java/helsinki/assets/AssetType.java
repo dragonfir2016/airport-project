@@ -44,7 +44,7 @@ public class AssetType extends ActivatableAbstractEntity<DynamicEntityKey> {
     public static final String ENTITY_TITLE = entityTitleAndDesc.getKey();
     public static final String ENTITY_DESC = entityTitleAndDesc.getValue();
     
-    @IsProperty
+    @IsProperty(length = 50)
     @MapTo
     @Title(value = "Name", desc = "A unique Asset Type name.")
     @CompositeKeyMember(1)
