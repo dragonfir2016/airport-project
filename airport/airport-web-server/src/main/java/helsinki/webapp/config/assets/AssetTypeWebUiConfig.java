@@ -110,7 +110,6 @@ public class AssetTypeWebUiConfig {
                 .addProp("name").asSinglelineText().also()
                 .addProp("desc").asMultilineText().also()
                 .addProp("assetClass").asAutocompleter().also()
-                .addProp("assetClass").asAutocompleter().also()
                 .addAction(MasterActions.REFRESH).shortDesc(MASTER_CANCEL_ACTION_SHORT_DESC).longDesc(MASTER_CANCEL_ACTION_LONG_DESC)
                 .addAction(MasterActions.SAVE).shortDesc(MASTER_SAVE_ACTION_SHORT_DESC).longDesc(MASTER_SAVE_ACTION_LONG_DESC)
                 .setActionBarLayoutFor(Device.DESKTOP, Optional.empty(), LayoutComposer.mkActionLayoutForMaster())
