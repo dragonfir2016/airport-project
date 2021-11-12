@@ -61,7 +61,7 @@ public class AssetClassWebUiConfig {
      * @return created entity centre
      */
     private EntityCentre<AssetClass> createCentre(final Injector injector, final IWebUiBuilder builder) {
-        final String layout = LayoutComposer.mkGridForCentre(1, 2);
+        final String layout = LayoutComposer.mkVarGridForCentre(2, 1);
 
         final EntityActionConfig standardNewAction = StandardActions.NEW_ACTION.mkAction(AssetClass.class);
         final EntityActionConfig standardDeleteAction = StandardActions.DELETE_ACTION.mkAction(AssetClass.class);
@@ -78,6 +78,7 @@ public class AssetClassWebUiConfig {
                 .addTopAction(standardSortAction).also()
                 .addTopAction(standardExportAction)
                 .addCrit("this").asMulti().autocompleter(AssetClass.class).also()
+                .addCrit("active").asMulti().bool().also()
                 .addCrit("desc").asMulti().text()
                 .setLayoutFor(Device.DESKTOP, Optional.empty(), layout)
                 .setLayoutFor(Device.TABLET, Optional.empty(), layout)
@@ -85,7 +86,8 @@ public class AssetClassWebUiConfig {
                 .withScrollingConfig(standardStandaloneScrollingConfig(0))
                 .addProp("this").order(1).asc().width(100)
                     .withSummary("total_count_", "COUNT(SELF)", format("Count:The total number of matching %ss.", AssetClass.ENTITY_TITLE)).also()
-                .addProp("desc").minWidth(300)
+                .addProp("desc").minWidth(300).also()
+                .addProp("active").width(50)
                 .addPrimaryAction(standardEditAction)
                 .build();
 
@@ -100,12 +102,12 @@ public class AssetClassWebUiConfig {
      */
     private EntityMaster<AssetClass> createMaster(final Injector injector) {
         final String layout = cell(
-                cell(cell(CELL_LAYOUT)).
+                cell(cell(CELL_LAYOUT).repeat(2).withGapBetweenCells(MARGIN)).
                 cell(cell(CELL_LAYOUT), FLEXIBLE_ROW), FLEXIBLE_LAYOUT_WITH_PADDING).toString();
 
         final IMaster<AssetClass> masterConfig = new SimpleMasterBuilder<AssetClass>().forEntity(AssetClass.class)
-                .addProp("active").asCheckbox().also()
                 .addProp("name").asSinglelineText().also()
+                .addProp("active").asCheckbox().also()
                 .addProp("desc").asMultilineText().also()
                 .addAction(MasterActions.REFRESH).shortDesc(MASTER_CANCEL_ACTION_SHORT_DESC).longDesc(MASTER_CANCEL_ACTION_LONG_DESC)
                 .addAction(MasterActions.SAVE).shortDesc(MASTER_SAVE_ACTION_SHORT_DESC).longDesc(MASTER_SAVE_ACTION_LONG_DESC)
