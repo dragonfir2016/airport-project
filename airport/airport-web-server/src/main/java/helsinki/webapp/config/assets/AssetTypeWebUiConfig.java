@@ -17,6 +17,7 @@ import com.google.inject.Injector;
 
 import helsinki.assets.AssetClass;
 import helsinki.assets.AssetType;
+import helsinki.assets.producers.AssetTypeProducer;
 import helsinki.common.LayoutComposer;
 import helsinki.common.StandardActions;
 
@@ -125,6 +126,6 @@ public class AssetTypeWebUiConfig {
                 .withDimensions(mkDim(LayoutComposer.SIMPLE_ONE_COLUMN_MASTER_DIM_WIDTH, 280, Unit.PX))
                 .done();
 
-        return new EntityMaster<>(AssetType.class, masterConfig, injector);
+        return new EntityMaster<>(AssetType.class, AssetTypeProducer.class, masterConfig, injector);
     }
 }
