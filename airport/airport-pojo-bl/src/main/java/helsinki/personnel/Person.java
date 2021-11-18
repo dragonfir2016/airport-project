@@ -204,9 +204,7 @@ public class Person extends ActivatableAbstractEntity<DynamicEntityKey> {
     public String getSurname() {
         return surname;
     }
-
     
-
 
     @Observable
     public Person setName(final String name) {
