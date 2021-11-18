@@ -183,7 +183,7 @@ public class AssetClassWebUiConfig {
      * @param editAssetClassAction2 
      * @return created entity centre
      */
-    private EntityCentre<AssetClass> createCentre(final Injector injector, final IWebUiBuilder builder, EntityActionConfig editAssetClassAction2) {
+    private EntityCentre<AssetClass> createCentre(final Injector injector, final IWebUiBuilder builder, final EntityActionConfig editAssetClassAction2) {
         final String layout = LayoutComposer.mkVarGridForCentre(2, 1);
 
         final EntityActionConfig standardNewAction = StandardActions.NEW_ACTION.mkAction(AssetClass.class);
