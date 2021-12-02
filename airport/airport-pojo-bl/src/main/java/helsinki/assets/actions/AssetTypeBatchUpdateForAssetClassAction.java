@@ -37,13 +37,13 @@ public class AssetTypeBatchUpdateForAssetClassAction extends AbstractFunctionalE
         setKey(NoKey.NO_KEY);
     }
     
-    @IsProperty(Long.class)
+    @IsProperty
     @MapTo
     @Required
     @Title(value = "AssetClass", desc = "New asset class.")
     private AssetClass assetClass;
     
-    @IsProperty
+    @IsProperty(Long.class)
     @MapTo
     @Title(value = "Selected asset types", desc = "Extended_description")
     private Set<Long> selectedEntityIds = new HashSet<>();

@@ -1,8 +1,10 @@
 package helsinki.webapp.config.assets;
 
-import static java.lang.String.format;
-import static ua.com.fielden.platform.web.centre.api.context.impl.EntityCentreContextSelector.context;
 import static ua.com.fielden.platform.web.centre.api.actions.impl.EntityActionBuilder.action;
+import static ua.com.fielden.platform.web.centre.api.context.impl.EntityCentreContextSelector.context;
+import helsinki.common.StandardActionsStyles;
+import ua.com.fielden.platform.web.minijs.JsCode;
+
 import static helsinki.common.LayoutComposer.CELL_LAYOUT;
 import static helsinki.common.LayoutComposer.FLEXIBLE_LAYOUT_WITH_PADDING;
 import static helsinki.common.LayoutComposer.FLEXIBLE_ROW;
@@ -12,6 +14,9 @@ import static helsinki.common.StandardActionsStyles.MASTER_CANCEL_ACTION_SHORT_D
 import static helsinki.common.StandardActionsStyles.MASTER_SAVE_ACTION_LONG_DESC;
 import static helsinki.common.StandardActionsStyles.MASTER_SAVE_ACTION_SHORT_DESC;
 import static helsinki.common.StandardScrollingConfigs.standardStandaloneScrollingConfig;
+import static java.lang.String.format;
+import static ua.com.fielden.platform.web.PrefDim.mkDim;
+import static ua.com.fielden.platform.web.layout.api.impl.LayoutBuilder.cell;
 
 import java.util.Optional;
 
@@ -20,27 +25,29 @@ import com.google.inject.Injector;
 import helsinki.assets.AssetClass;
 import helsinki.assets.AssetType;
 import helsinki.assets.actions.AssetTypeBatchUpdateForAssetClassAction;
+import helsinki.assets.actions.producers.AssetTypeBatchUpdateForAssetClassActionProducer;
 import helsinki.assets.producers.AssetTypeProducer;
 import helsinki.common.LayoutComposer;
 import helsinki.common.StandardActions;
-import helsinki.common.StandardActionsStyles;
-import ua.com.fielden.platform.web.interfaces.ILayout.Device;
-import ua.com.fielden.platform.web.minijs.JsCode;
+import helsinki.main.menu.assets.MiAssetType;
+import ua.com.fielden.platform.web.PrefDim.Unit;
 import ua.com.fielden.platform.web.action.CentreConfigurationWebUiConfig.CentreConfigActions;
+import ua.com.fielden.platform.web.app.config.IWebUiBuilder;
+import ua.com.fielden.platform.web.centre.EntityCentre;
 import ua.com.fielden.platform.web.centre.api.EntityCentreConfig;
 import ua.com.fielden.platform.web.centre.api.actions.EntityActionConfig;
 import ua.com.fielden.platform.web.centre.api.impl.EntityCentreBuilder;
+import ua.com.fielden.platform.web.interfaces.ILayout.Device;
+import ua.com.fielden.platform.web.view.master.EntityMaster;
+import ua.com.fielden.platform.web.view.master.api.IMaster;
 import ua.com.fielden.platform.web.view.master.api.actions.MasterActions;
 import ua.com.fielden.platform.web.view.master.api.impl.SimpleMasterBuilder;
-import ua.com.fielden.platform.web.view.master.api.IMaster;
-import ua.com.fielden.platform.web.app.config.IWebUiBuilder;
-import helsinki.main.menu.assets.MiAssetType;
-import ua.com.fielden.platform.web.centre.EntityCentre;
-import ua.com.fielden.platform.web.view.master.EntityMaster;
-import static ua.com.fielden.platform.web.PrefDim.mkDim;
-import static ua.com.fielden.platform.web.layout.api.impl.LayoutBuilder.cell;
 
-import ua.com.fielden.platform.web.PrefDim.Unit;
+
+
+
+
+
 
 /**
  * {@link AssetType} Web UI configuration.
@@ -62,6 +69,8 @@ public class AssetTypeWebUiConfig {
         builder.register(centre);
         master = createMaster(injector);
         builder.register(master);
+        
+        builder.register(createAssetTypeBatchUpdateForAssetClassActionMaster(injector));
     }
 
     /**
@@ -113,6 +122,23 @@ public class AssetTypeWebUiConfig {
                 .build();
 
         return new EntityCentre<>(MiAssetType.class, ecc, injector);
+    }
+    
+    private static EntityMaster<AssetTypeBatchUpdateForAssetClassAction> createAssetTypeBatchUpdateForAssetClassActionMaster (final Injector injector){
+        final String layout = LayoutComposer.mkGridForMasterFitWidth(1, 1);
+        
+        final var masterConfig = new SimpleMasterBuilder<AssetTypeBatchUpdateForAssetClassAction>().forEntity(AssetTypeBatchUpdateForAssetClassAction.class)
+                .addProp("assetClass").asAutocompleter().also()
+                .addAction(MasterActions.REFRESH).shortDesc(MASTER_CANCEL_ACTION_SHORT_DESC).longDesc(MASTER_CANCEL_ACTION_LONG_DESC)
+                .addAction(MasterActions.SAVE).shortDesc(MASTER_SAVE_ACTION_SHORT_DESC).longDesc(MASTER_SAVE_ACTION_LONG_DESC)
+                .setActionBarLayoutFor(Device.DESKTOP, Optional.empty(), layout)
+                .setLayoutFor(Device.DESKTOP, Optional.empty(), layout)
+                .setLayoutFor(Device.TABLET, Optional.empty(), layout)
+                .setLayoutFor(Device.MOBILE, Optional.empty(), layout)
+                .withDimensions(mkDim(300, 200, Unit.PX))
+                .done();
+        
+        return new EntityMaster<>(AssetTypeBatchUpdateForAssetClassAction.class, AssetTypeBatchUpdateForAssetClassActionProducer.class, masterConfig, injector);
     }
 
     /**

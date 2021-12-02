@@ -35,6 +35,7 @@ import ua.com.fielden.platform.entity.query.model.EntityResultQueryModel;
 import ua.com.fielden.platform.entity.query.model.OrderingModel;
 import ua.com.fielden.platform.error.Result;
 import ua.com.fielden.platform.entity.annotation.EntityType;
+import ua.com.fielden.platform.entity.fetch.IFetchProvider;
 
 /**
  * DAO implementation for companion object {@link AssetTypeBatchUpdateForAssetClassActionCo}.
@@ -66,5 +67,10 @@ public class AssetTypeBatchUpdateForAssetClassActionDao extends CommonEntityDao<
         
         return super.save(action);
     }
+    
+    @Override
+        protected IFetchProvider<AssetTypeBatchUpdateForAssetClassAction> createFetchProvider() {
+            return FETCH_PROVIDER;
+        }
 
 }
