@@ -11,6 +11,7 @@ import ua.com.fielden.platform.entity.NoKey;
 import ua.com.fielden.platform.entity.annotation.KeyType;
 import ua.com.fielden.platform.entity.annotation.MapTo;
 import ua.com.fielden.platform.entity.annotation.Observable;
+import ua.com.fielden.platform.entity.annotation.Required;
 import ua.com.fielden.platform.entity.annotation.Title;
 import ua.com.fielden.platform.entity.annotation.KeyTitle;
 import ua.com.fielden.platform.entity.annotation.CompanionObject;
@@ -36,8 +37,9 @@ public class AssetTypeBatchUpdateForAssetClassAction extends AbstractFunctionalE
         setKey(NoKey.NO_KEY);
     }
     
-    @IsProperty
+    @IsProperty(Long.class)
     @MapTo
+    @Required
     @Title(value = "AssetClass", desc = "New asset class.")
     private AssetClass assetClass;
     
