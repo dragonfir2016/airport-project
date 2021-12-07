@@ -34,7 +34,7 @@ public class AssetDao extends CommonEntityDao<Asset> implements AssetCo {
     
     @Override
         public Asset new_() {
-            return super.new_().setNumber(DEFAUL_KEY_VALUE);
+            return super.new_().setNumber(DEFAUL_KEY_VALUE).setActive(true);
         }
 
     @Override
@@ -49,7 +49,10 @@ public class AssetDao extends CommonEntityDao<Asset> implements AssetCo {
             asset.setNumber(nextNumber);
         }
         try {
-        return super.save(asset);
+            final var savedAsset = super.save(asset);
+            final AssetFinDetCo coAssetFinDet = co(AssetFinDet.class);
+            coAssetFinDet.save(coAssetFinDet.new_().setKey(savedAsset));
+            return savedAsset;
         }
         catch (final Exception ex) {
             if (!wasPersisted) {

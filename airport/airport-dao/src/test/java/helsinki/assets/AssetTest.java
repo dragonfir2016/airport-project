@@ -56,6 +56,22 @@ public class AssetTest extends AbstractDaoTestCase {
     }
     
     
+    @Test
+    public void asset_financial_details_created_with_every_new_asset() {
+        final AssetType type = co(AssetType.class).findByKeyAndFetch(AssetCo.FETCH_PROVIDER.<AssetType>fetchFor("assetType").fetchModel(), "AT1");
+        final AssetCo co = co(Asset.class);
+        final Asset asset = co.new_();
+        assertEquals(AssetCo.DEFAUL_KEY_VALUE, asset.getNumber());
+        asset.setAssetType(type);
+        asset.setDesc("some desc");
+        final Asset savedAsset = co.save(asset);
+        
+        final AssetFinDet assetFinDet = co(AssetFinDet.class).findByKey(savedAsset);
+        assertNotNull(assetFinDet);
+
+    }
+    
+    
     @Override
     public boolean saveDataPopulationScriptToFile() {
         return false;
