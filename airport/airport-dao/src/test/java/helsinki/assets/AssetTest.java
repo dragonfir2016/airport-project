@@ -29,16 +29,28 @@ public class AssetTest extends AbstractDaoTestCase {
     public void new_asset_get_their_number_generated() {
         final AssetType type = co(AssetType.class).findByKeyAndFetch(AssetCo.FETCH_PROVIDER.<AssetType>fetchFor("assetType").fetchModel(), "AT1");
         final AssetCo co = co(Asset.class);
-        final Asset asset = co.new_();
-        assertEquals(AssetCo.DEFAUL_KEY_VALUE, asset.getNumber());
-        asset.setAssetType(type);
-        asset.setDesc("some desc");
+        final Asset asset1 = co.new_();
+        assertEquals(AssetCo.DEFAUL_KEY_VALUE, asset1.getNumber());
+        asset1.setAssetType(type);
+        asset1.setDesc("some desc");
         
-        final Asset savedAsset = co.save(asset);
-        assertNotEquals(AssetCo.DEFAUL_KEY_VALUE, savedAsset.getNumber());
-        assertFalse(StringUtils.isEmpty(savedAsset.getNumber()));
-        assertEquals("000000001", savedAsset.getNumber());
+        final Asset savedAsset1 = co.save(asset1);
+        assertNotEquals(AssetCo.DEFAUL_KEY_VALUE, savedAsset1.getNumber());
+        assertFalse(StringUtils.isEmpty(savedAsset1.getNumber()));
+        assertEquals("000000001", savedAsset1.getNumber());
+        
+        final Asset asset2 = co.new_();
+        assertEquals(AssetCo.DEFAUL_KEY_VALUE, asset2.getNumber());
+        asset2.setAssetType(type);
+        asset2.setDesc("Another desc.");
+        
+        final Asset savedAsset2 = co.save(asset2);
+        assertNotEquals(AssetCo.DEFAUL_KEY_VALUE, savedAsset2.getNumber());
+        assertFalse(StringUtils.isEmpty(savedAsset2.getNumber()));
+        assertEquals("000000002", savedAsset2.getNumber());
+        System.out.printf(savedAsset1.getNumber() + savedAsset2.getNumber());
     }
+    
     
     @Test
     public void exsiting_assets_cannot_have_their_number_changed() {
