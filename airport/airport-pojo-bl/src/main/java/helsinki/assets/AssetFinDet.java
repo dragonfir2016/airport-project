@@ -3,6 +3,7 @@ package helsinki.assets;
 import java.util.Date;
 
 import helsinki.assets.Asset;
+import helsinki.assets.definers.AssetFinDetInitCostDefiner;
 import ua.com.fielden.platform.entity.AbstractEntity;
 import ua.com.fielden.platform.entity.AbstractPersistentEntity;
 import ua.com.fielden.platform.entity.annotation.KeyType;
@@ -14,6 +15,7 @@ import ua.com.fielden.platform.entity.annotation.MapEntityTo;
 import ua.com.fielden.platform.entity.annotation.MapTo;
 import ua.com.fielden.platform.entity.annotation.Observable;
 import ua.com.fielden.platform.entity.annotation.Title;
+import ua.com.fielden.platform.entity.annotation.mutator.AfterChange;
 import ua.com.fielden.platform.entity.validation.annotation.GeProperty;
 import ua.com.fielden.platform.entity.validation.annotation.LeProperty;
 import ua.com.fielden.platform.reflection.TitlesDescsGetter;
@@ -51,6 +53,7 @@ public class AssetFinDet extends AbstractPersistentEntity<Asset> {
     @IsProperty
     @MapTo
     @Title(value = "Initial Cost", desc = "The initial cost of this asset.")
+    @AfterChange(AssetFinDetInitCostDefiner.class)
     private Money initCost;
 
     @Observable

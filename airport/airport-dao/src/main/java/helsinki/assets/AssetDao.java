@@ -40,7 +40,7 @@ public class AssetDao extends CommonEntityDao<Asset> implements AssetCo {
     @Override
     @SessionRequired
     @Authorise(Asset_CanSave_Token.class)
-    public Asset save(Asset asset) {
+    public Asset save(final Asset asset) {
         final boolean wasPersisted  = asset.isPersisted();
         
         if (!wasPersisted) {
@@ -50,8 +50,10 @@ public class AssetDao extends CommonEntityDao<Asset> implements AssetCo {
         }
         try {
             final var savedAsset = super.save(asset);
+            if (!wasPersisted) {
             final AssetFinDetCo coAssetFinDet = co(AssetFinDet.class);
             coAssetFinDet.save(coAssetFinDet.new_().setKey(savedAsset));
+            }
             return savedAsset;
         }
         catch (final Exception ex) {

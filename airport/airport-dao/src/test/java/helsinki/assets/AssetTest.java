@@ -5,13 +5,16 @@ import static ua.com.fielden.platform.entity.query.fluent.EntityQueryUtils.from;
 import static ua.com.fielden.platform.entity.query.fluent.EntityQueryUtils.orderBy;
 import static ua.com.fielden.platform.entity.query.fluent.EntityQueryUtils.select;
 
+import java.util.Date;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
+import ua.com.fielden.platform.entity.meta.MetaProperty;
 import ua.com.fielden.platform.keygen.KeyNumber;
 import ua.com.fielden.platform.test.ioc.UniversalConstantsForTesting;
+import ua.com.fielden.platform.types.Money;
 import ua.com.fielden.platform.utils.IUniversalConstants;
 import helsinki.assets.actions.AssetTypeBatchUpdateForAssetClassAction;
 import helsinki.test_config.AbstractDaoTestCase;
@@ -81,6 +84,84 @@ public class AssetTest extends AbstractDaoTestCase {
         final AssetFinDet assetFinDet = co(AssetFinDet.class).findByKey(savedAsset);
         assertNotNull(assetFinDet);
 
+    }
+    
+    
+    @Test
+    public void asset_financial_details_are_not_created_again_for_existing_asset() {
+        final AssetType type = co(AssetType.class).findByKeyAndFetch(AssetCo.FETCH_PROVIDER.<AssetType>fetchFor("assetType").fetchModel(), "AT1");
+        final AssetCo co = co(Asset.class);
+        final Asset asset = co.new_();
+        assertEquals(AssetCo.DEFAUL_KEY_VALUE, asset.getNumber());
+        asset.setAssetType(type);
+        asset.setDesc("some desc");
+        final Asset savedAsset = co.save(asset);
+        
+        final var co$AssetFinDet = co$(AssetFinDet.class);
+        final AssetFinDet assetFinDet = co$AssetFinDet.findByKeyAndFetch(AssetFinDetCo.FETCH_PROVIDER.fetchModel(), savedAsset);
+        assertNotNull(assetFinDet);
+        assetFinDet.setInitCost(Money.of("100.00"));
+        assetFinDet.setComisionDate(date("2021-11-06 10:00:00"));
+        final var savedAssetFinDet = co$AssetFinDet.save(assetFinDet);
+        assertEquals(Money.of("100.00"), savedAssetFinDet.getInitCost());
+
+        final Asset savedAgain = co.save(savedAsset.setDesc("some other desc."));
+        final AssetFinDet assetFinDetAfterAssetWasSaved = co$AssetFinDet.findByKeyAndFetch(AssetFinDetCo.FETCH_PROVIDER.fetchModel(), savedAsset);
+        assertEquals(Money.of("100.00"), assetFinDetAfterAssetWasSaved.getInitCost());
+    }
+    
+    @Test
+    public void dependent_date_props_resolve_invalid_values_by_means_of_dependency() {
+        final AssetType type = co(AssetType.class).findByKeyAndFetch(AssetCo.FETCH_PROVIDER.<AssetType>fetchFor("assetType").fetchModel(), "AT1");
+        final AssetCo co = co(Asset.class);
+        final Asset asset = co.new_();
+        assertEquals(AssetCo.DEFAUL_KEY_VALUE, asset.getNumber());
+        asset.setAssetType(type);
+        asset.setDesc("some desc");
+        final Asset savedAsset = co.save(asset);
+        
+        final var co$AssetFinDet = co$(AssetFinDet.class);
+        final AssetFinDet assetFinDet = co$AssetFinDet.findByKeyAndFetch(AssetFinDetCo.FETCH_PROVIDER.fetchModel(), savedAsset);
+        assetFinDet.setComisionDate(date("2021-12-06 10:00:00"));
+        final MetaProperty<Date> mpComisionDate = assetFinDet.getProperty("comisionDate");
+        assertTrue(mpComisionDate.isValid());
+        
+        assertNull(assetFinDet.getDisposalDate());
+        assetFinDet.setDisposalDate(date("2021-12-06 08:00:00"));
+        final MetaProperty<Date> mpDisposalDate = assetFinDet.getProperty("disposalDate");
+        assertFalse(mpDisposalDate.isValid());
+        assertNull(assetFinDet.getDisposalDate());
+        
+        assetFinDet.setComisionDate(date("2021-12-06 06:00:00"));
+        assertTrue(mpComisionDate.isValid());
+        assertTrue(mpDisposalDate.isValid());
+
+    }
+    
+    @Test
+    public void comissionDate_is_required_where_initCost_is_entered() {
+        final AssetType type = co(AssetType.class).findByKeyAndFetch(AssetCo.FETCH_PROVIDER.<AssetType>fetchFor("assetType").fetchModel(), "AT1");
+        final AssetCo co = co(Asset.class);
+        final Asset savedAsset = co.save(co.new_().setAssetType(type).setDesc("some desc"));
+        
+        final var co$AssetFinDet = co$(AssetFinDet.class);
+        final AssetFinDet assetFinDet = co$AssetFinDet.findByKeyAndFetch(AssetFinDetCo.FETCH_PROVIDER.fetchModel(), savedAsset);
+        
+        final MetaProperty<Date> mpComisionDate = assetFinDet.getProperty("comisionDate");
+        final MetaProperty<Money> mpInitCost = assetFinDet.getProperty("initCost");
+        
+        assertFalse(mpComisionDate.isRequired());
+        assertFalse(mpInitCost.isRequired());
+        
+        assetFinDet.setInitCost(Money.of("100.00"));
+        
+        assertTrue(mpComisionDate.isRequired());
+
+
+        assetFinDet.setComisionDate(date("2021-12-06 10:00:00"));
+        assertTrue(mpComisionDate.isRequired());
+
+        assertEquals(date("2021-12-06 10:00:00"), assetFinDet.getComisionDate());
     }
     
     
