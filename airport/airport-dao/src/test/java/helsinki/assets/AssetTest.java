@@ -9,6 +9,8 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.junit.Before;
 import org.junit.Test;
 
 import ua.com.fielden.platform.entity.meta.MetaProperty;
@@ -27,6 +29,13 @@ import helsinki.test_config.AbstractDaoTestCase;
  *
  */
 public class AssetTest extends AbstractDaoTestCase {
+    private final DateTime now = dateTime("2019-10-01 11:30:00");
+    
+    @Before
+    public void setUp() {
+        final UniversalConstantsForTesting constants = (UniversalConstantsForTesting) getInstance(IUniversalConstants.class);
+        constants.setNow(now);
+    }
 
     @Test
     public void new_asset_get_their_number_generated() {
@@ -164,6 +173,54 @@ public class AssetTest extends AbstractDaoTestCase {
         assertEquals(date("2021-12-06 10:00:00"), assetFinDet.getComisionDate());
     }
     
+    @Test
+    public void comisionDate_is_assigned_now_upon_initCost_change_if_empty() {
+        final AssetType type = co(AssetType.class).findByKeyAndFetch(AssetCo.FETCH_PROVIDER.<AssetType>fetchFor("assetType").fetchModel(), "AT1");
+        final AssetCo co = co(Asset.class);
+        final Asset savedAsset = co.save(co.new_().setAssetType(type).setDesc("some desc"));
+        
+        final var co$AssetFinDet = co$(AssetFinDet.class);
+        final AssetFinDet assetFinDet = co$AssetFinDet.findByKeyAndFetch(AssetFinDetCo.FETCH_PROVIDER.fetchModel(), savedAsset);
+        
+        final MetaProperty<Date> mpComisionDate = assetFinDet.getProperty("comisionDate");
+        final MetaProperty<Money> mpInitCost = assetFinDet.getProperty("initCost");
+        
+        assertFalse(mpComisionDate.isRequired());
+        assertFalse(mpInitCost.isRequired());
+        assertNull(assetFinDet.getComisionDate());
+        
+        assetFinDet.setInitCost(Money.of("100.00"));
+        
+        assertTrue(mpComisionDate.isRequired());
+        assertTrue(mpComisionDate.isRequired());
+        assertEquals(now.toDate(), assetFinDet.getComisionDate());
+        
+        final UniversalConstantsForTesting constants = (UniversalConstantsForTesting) getInstance(IUniversalConstants.class);
+        constants.setNow(now.plusMinutes(1));
+
+        
+        assetFinDet.setInitCost(Money.of("101.00"));
+        assertEquals(now.toDate(), assetFinDet.getComisionDate());
+    }
+    
+    @Test
+    public void comisionDate_does_not_change_upon_retrieval() {
+        final AssetType type = co(AssetType.class).findByKeyAndFetch(AssetCo.FETCH_PROVIDER.<AssetType>fetchFor("assetType").fetchModel(), "AT1");
+        final AssetCo co = co(Asset.class);
+        final Asset savedAsset = co.save(co.new_().setAssetType(type).setDesc("some desc"));
+        
+        final var co$AssetFinDet = co$(AssetFinDet.class);
+        final AssetFinDet assetFinDet = save(co$AssetFinDet.findByKeyAndFetch(AssetFinDetCo.FETCH_PROVIDER.fetchModel(), savedAsset).setInitCost(Money.of("100.00")));        
+        assertEquals(now.toDate(), assetFinDet.getComisionDate());
+        
+        final UniversalConstantsForTesting constants = (UniversalConstantsForTesting) getInstance(IUniversalConstants.class);
+        constants.setNow(now.plusMinutes(1));
+        
+        final AssetFinDet assetFinDet2 = co$AssetFinDet.findByKeyAndFetch(AssetFinDetCo.FETCH_PROVIDER.fetchModel(), savedAsset);        
+        assertEquals(assetFinDet.getComisionDate(), assetFinDet2.getComisionDate());
+    }
+    
+    
     
     @Override
     public boolean saveDataPopulationScriptToFile() {
@@ -172,7 +229,7 @@ public class AssetTest extends AbstractDaoTestCase {
 
     @Override
     public boolean useSavedDataPopulationScript() {
-        return true;
+        return false;
     }
 
     @Override
@@ -180,7 +237,7 @@ public class AssetTest extends AbstractDaoTestCase {
         super.populateDomain();
 
         final UniversalConstantsForTesting constants = (UniversalConstantsForTesting) getInstance(IUniversalConstants.class);
-        constants.setNow(dateTime("2019-10-01 11:30:00"));
+        constants.setNow(now);
         
         if(useSavedDataPopulationScript()) {
             return;
