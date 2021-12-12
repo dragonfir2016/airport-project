@@ -73,9 +73,7 @@ public class AssetFinDet extends AbstractPersistentEntity<Asset> {
             super.setKey(key);
             return this;
         }
-    
 
-    
     @Observable
     @LeProperty("disposalDate")
     public AssetFinDet setComisionDate(final Date comisionDate) {
