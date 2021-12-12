@@ -40,13 +40,13 @@ public class AssetFinDet extends AbstractPersistentEntity<Asset> {
     
     @IsProperty
     @MapTo
-    @Dependent("disposalDate")
+    @Dependent("comisionDate")
     @Title(value = "Comission date", desc = "The day when this asset was commisioned.")
     private Date comisionDate;
 
     @IsProperty
     @MapTo
-    @Dependent("comisionDate")
+    @Dependent("disposalDate")
     @Title(value = "Disposal Date", desc = "The date when this asset was disposed.")
     private Date disposalDate;
 
