@@ -57,7 +57,7 @@ public class AssetOwnershipTest extends AbstractDaoTestCase {
     }
     
     @Test
-    public void if_one_of_meps_is_entered_than_the_other_two_are_cleared_and_nor_required() {
+    public void for_new_entity_if_one_of_meps_is_entered_than_the_other_two_are_cleared_and_nor_required() {
         final Asset asset = co(Asset.class).findByKeyAndFetch(AssetOwnershipCo.FETCH_PROVIDER.<Asset>fetchFor("asset").fetchModel(), "000000001");
         assertNotNull(asset);
         

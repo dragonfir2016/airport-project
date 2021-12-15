@@ -24,6 +24,8 @@ public class AssetOwnershipBuDefiner extends AbstractAfterChangeEventHandler<Str
                 entity.setOrganisation(null);
                 entity.setRole(null);
             }
+        } else {
+            mpBu.setRequired(!StringUtils.isEmpty(value));
         }
     }
 

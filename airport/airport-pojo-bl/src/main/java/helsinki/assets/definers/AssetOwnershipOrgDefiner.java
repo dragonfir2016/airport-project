@@ -24,6 +24,8 @@ public class AssetOwnershipOrgDefiner extends AbstractAfterChangeEventHandler<St
                 entity.setRole(null);
                 entity.setBu(null);
             }
+        } else {
+            mpOrganisation.setRequired(!StringUtils.isEmpty(value));
         }
     }
 
