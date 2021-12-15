@@ -3,6 +3,9 @@ package helsinki.assets;
 import java.util.Date;
 
 import helsinki.assets.Asset;
+import helsinki.assets.definers.AssetOwnershipBuDefiner;
+import helsinki.assets.definers.AssetOwnershipOrgDefiner;
+import helsinki.assets.definers.AssetOwnershipRoleDefiner;
 import ua.com.fielden.platform.entity.DynamicEntityKey;
 import ua.com.fielden.platform.entity.ActivatableAbstractEntity;
 import ua.com.fielden.platform.entity.annotation.CompositeKeyMember;
@@ -17,6 +20,7 @@ import ua.com.fielden.platform.entity.annotation.DescRequired;
 import ua.com.fielden.platform.entity.annotation.IsProperty;
 import ua.com.fielden.platform.entity.annotation.Observable;
 import ua.com.fielden.platform.entity.annotation.Title;
+import ua.com.fielden.platform.entity.annotation.mutator.AfterChange;
 import ua.com.fielden.platform.reflection.TitlesDescsGetter;
 import ua.com.fielden.platform.utils.Pair;
 
@@ -51,16 +55,19 @@ public class AssetOwnership extends ActivatableAbstractEntity<DynamicEntityKey> 
     @IsProperty
     @MapTo
     @Title(value = "Role", desc = "Owner as Role")
+    @AfterChange(AssetOwnershipRoleDefiner.class)
     private String role;
     
     @IsProperty
     @MapTo
     @Title(value = "Organisation", desc = "Organisation as a Owner")
+    @AfterChange(AssetOwnershipOrgDefiner.class)
     private String organisation;
     
     @IsProperty
     @MapTo
     @Title(value = "Business Unit", desc = "Owner as a Business unit")
+    @AfterChange(AssetOwnershipBuDefiner.class)
     private String bu;
 
     @Observable

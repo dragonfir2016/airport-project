@@ -33,9 +33,9 @@ public class AssetOwnershipDao extends CommonEntityDao<AssetOwnership> implement
     @Override
     public AssetOwnership new_() {
         final var ownership = super.new_();
-        ownership.getProperty("role").setRequired(true, ERR_REQUIRED);
-        ownership.getProperty("organisation").setRequired(true, ERR_REQUIRED);
-        ownership.getProperty("bu").setRequired(true, ERR_REQUIRED);
+        ownership.getProperty("role").setRequired(true);
+        ownership.getProperty("organisation").setRequired(true);
+        ownership.getProperty("bu").setRequired(true);
         return ownership;
     }
 

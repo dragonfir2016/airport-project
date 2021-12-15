@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ua.com.fielden.platform.entity.meta.MetaProperty;
+import ua.com.fielden.platform.error.Result;
 import ua.com.fielden.platform.keygen.KeyNumber;
 import ua.com.fielden.platform.test.ioc.UniversalConstantsForTesting;
 import ua.com.fielden.platform.types.Money;
@@ -39,16 +40,68 @@ public class AssetOwnershipTest extends AbstractDaoTestCase {
     
     @Test
     public void if_no_owners_are_specified_then_all_are_required() {
-        final Asset asset = co(Asset.class).findByKeyAndFetch(AssetOwnershipCo.FETCH_PROVIDER.<Asset>fetchFor("assetType").fetchModel(), "000000001");
+        final Asset asset = co(Asset.class).findByKeyAndFetch(AssetOwnershipCo.FETCH_PROVIDER.<Asset>fetchFor("asset").fetchModel(), "000000001");
         assertNotNull(asset);
         
         final AssetOwnershipCo co = co(AssetOwnership.class);
         final AssetOwnership ownership = co.new_();
+        ownership.setAsset(asset).setStartDate(date("2021-12-10 00:00:00"));
         
         assertTrue(ownership.getProperty("role").isRequired());
         assertTrue(ownership.getProperty("organisation").isRequired());
         assertTrue(ownership.getProperty("bu").isRequired());
+        final Result res = ownership.isValid();
+        assertFalse(res.isSuccessful());
+        System.out.println(res.getMessage());
 
+    }
+    
+    @Test
+    public void if_one_of_meps_is_entered_than_the_other_two_are_cleared_and_nor_required() {
+        final Asset asset = co(Asset.class).findByKeyAndFetch(AssetOwnershipCo.FETCH_PROVIDER.<Asset>fetchFor("asset").fetchModel(), "000000001");
+        assertNotNull(asset);
+        
+        final AssetOwnershipCo co = co(AssetOwnership.class);
+        final AssetOwnership ownership = co.new_();
+        ownership.setAsset(asset).setStartDate(date("2021-12-10 00:00:00"));
+        
+        final var mpRole = ownership.getProperty("role");
+        final var mpOrganisation = ownership.getProperty("organisation");
+        final var mpBu = ownership.getProperty("bu");
+        
+        ownership.setRole("some role");
+        
+        assertTrue(mpRole.isRequired());
+        assertFalse(mpOrganisation.isRequired());
+        assertFalse(mpBu.isRequired());
+        
+        assertEquals(ownership.getRole(), "some role");
+        assertNull(ownership.getOrganisation());
+        assertNull(ownership.getBu());
+        
+        ownership.setOrganisation("some org");
+        
+        assertTrue(mpOrganisation.isRequired());
+        assertFalse(mpRole.isRequired());
+        assertFalse(mpBu.isRequired());
+        
+        assertEquals(ownership.getOrganisation(), "some org");
+        assertNull(ownership.getRole());
+        assertNull(ownership.getBu());
+        
+        ownership.setBu("some bu");
+        
+        assertTrue(mpBu.isRequired());
+        assertFalse(mpRole.isRequired());
+        assertFalse(mpOrganisation.isRequired());
+        
+        assertEquals(ownership.getBu(), "some bu");
+        assertNull(ownership.getRole());
+        assertNull(ownership.getOrganisation());
+        
+        ownership.setBu(null);
+        assertFalse(mpBu.isValid());
+        
     }
     
     @Override
@@ -58,7 +111,7 @@ public class AssetOwnershipTest extends AbstractDaoTestCase {
 
     @Override
     public boolean useSavedDataPopulationScript() {
-        return true;
+        return false;
     }
 
     @Override
