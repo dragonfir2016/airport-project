@@ -57,7 +57,7 @@ public class AssetOwnershipTest extends AbstractDaoTestCase {
     }
     
     @Test
-    public void for_new_entity_if_one_of_meps_is_entered_than_the_other_two_are_cleared_and_nor_required() {
+    public void for_new_entity_if_one_of_meps_is_entered_than_the_other_two_are_cleared_and_not_required() {
         final Asset asset = co(Asset.class).findByKeyAndFetch(AssetOwnershipCo.FETCH_PROVIDER.<Asset>fetchFor("asset").fetchModel(), "000000001");
         assertNotNull(asset);
         
@@ -104,6 +104,36 @@ public class AssetOwnershipTest extends AbstractDaoTestCase {
         
     }
     
+    
+    
+    @Test
+    public void for_persisted_entity_if_one_of_meps_is_changed_than_the_other_two_are_cleared_and_not_required() {
+        final Asset asset = co(Asset.class).findByKeyAndFetch(AssetOwnershipCo.FETCH_PROVIDER.<Asset>fetchFor("asset").fetchModel(), "000000001");
+        assertNotNull(asset);
+
+        final AssetOwnership ownership = save(new_(AssetOwnership.class).setAsset(asset).setStartDate(date("2021-12-10 00:00:00")).setRole("some role"));
+        
+        assertTrue(ownership.isValid().isSuccessful());
+        
+        ownership.setRole(null);
+
+        assertFalse(ownership.isValid().isSuccessful());
+        
+        assertTrue(ownership.setOrganisation("some org").isValid().isSuccessful());
+        assertNull(ownership.getRole());
+        assertNull(ownership.getBu());
+        
+        assertTrue(ownership.setBu("some bu").isValid().isSuccessful());
+        assertNull(ownership.getRole());
+        assertNull(ownership.getOrganisation());
+        
+        assertTrue(ownership.setRole("some role").isValid().isSuccessful());
+        assertNull(ownership.getBu());
+        assertNull(ownership.getOrganisation());
+    }
+    
+    
+    
     @Override
     public boolean saveDataPopulationScriptToFile() {
         return false;
@@ -111,7 +141,7 @@ public class AssetOwnershipTest extends AbstractDaoTestCase {
 
     @Override
     public boolean useSavedDataPopulationScript() {
-        return false;
+        return true;
     }
 
     @Override
