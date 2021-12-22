@@ -4,10 +4,16 @@ import static ua.com.fielden.platform.reflection.TitlesDescsGetter.getEntityTitl
 
 import org.apache.commons.lang3.StringUtils;
 
+import helsinki.assets.AssetClass;
+import helsinki.assets.AssetOwnership;
+import helsinki.assets.AssetType;
 import helsinki.config.Modules;
 import helsinki.config.personnel.PersonWebUiConfig;
 import helsinki.personnel.Person;
-
+import helsinki.webapp.config.assets.AssetClassWebUiConfig;
+import helsinki.webapp.config.assets.AssetOwnershipWebUiConfig;
+import helsinki.webapp.config.assets.AssetClassWebUiConfig;
+import helsinki.webapp.config.assets.AssetTypeWebUiConfig;
 import ua.com.fielden.platform.basic.config.Workflows;
 import ua.com.fielden.platform.utils.Pair;
 import ua.com.fielden.platform.web.app.config.IWebUiBuilder;
@@ -81,6 +87,11 @@ public class WebUiConfig extends AbstractWebUiConfig {
         final UserRoleWebUiConfig userRoleWebUiConfig = new UserRoleWebUiConfig(injector());
         final SecurityMatrixWebUiConfig securityConfig = SecurityMatrixWebUiConfig.register(injector(), configApp());
 
+        // Assets module
+        final AssetClassWebUiConfig assetClassWebUiConfig = AssetClassWebUiConfig.register(injector(), builder);
+        final AssetTypeWebUiConfig assetTypeWebUiConfig = AssetTypeWebUiConfig.register(injector(), builder);
+        final AssetOwnershipWebUiConfig assetOwnershipWebUiConfig = AssetOwnershipWebUiConfig.register(injector(), builder);
+        
         // Add user-rated masters and centres to the configuration 
         configApp()
         .addMaster(userWebUiConfig.master)
@@ -100,6 +111,9 @@ public class WebUiConfig extends AbstractWebUiConfig {
             .captionBgColor(Modules.USERS_AND_PERSONNEL.captionBgColour)
             .menu()
                 .addMenuItem(mkMenuItemTitle(Person.class)).description(mkMenuItemDesc(Person.class)).centre(personWebUiConfig.centre).done()
+                .addMenuItem(mkMenuItemTitle(AssetClass.class)).description(mkMenuItemDesc(AssetClass.class)).centre(assetClassWebUiConfig.centre).done()
+                .addMenuItem(mkMenuItemTitle(AssetType.class)).description(mkMenuItemDesc(AssetType.class)).centre(assetTypeWebUiConfig.centre).done()
+                .addMenuItem(mkMenuItemTitle(AssetOwnership.class)).description(mkMenuItemDesc(AssetOwnership.class)).centre(assetOwnershipWebUiConfig.centre).done()
                 .addMenuItem("System Users").description("Functionality for managing system users, athorisation, etc.")
                     .addMenuItem("Users").description("User centre").centre(userWebUiConfig.centre).done()
                     .addMenuItem("User Roles").description("User roles centre").centre(userRoleWebUiConfig.centre).done()
